@@ -11,10 +11,14 @@ type UserDataOnDisk = {
     referral: {
         referralLink?: string;
         referrerUserId?: UserId;
+        referralCount?: number;
+        referralBonuses?: number;
+        referralSubscriptions?: { [userId: number]: string };
     };
     subscription: {
         subscriptionEnd?: number;
     };
+    firstSubscriptionType?: string;
 }
 
 export class DiskUserStorage implements UserStorage {
@@ -35,12 +39,16 @@ export class DiskUserStorage implements UserStorage {
             userId: userDataOnDisk.userId,
             referral: {
                 referralLink: userDataOnDisk.referral.referralLink,
-                referrerUserId: userDataOnDisk.referral.referrerUserId
+                referrerUserId: userDataOnDisk.referral.referrerUserId,
+                referralCount: userDataOnDisk.referral.referralCount,
+                referralBonuses: userDataOnDisk.referral.referralBonuses,
+                referralSubscriptions: userDataOnDisk.referral.referralSubscriptions,
             },
             settings: userDataOnDisk.settings,
             subscription: {
                 subscriptionEnd: userDataOnDisk.subscription.subscriptionEnd
             },
+
         };
     }
 
@@ -53,7 +61,10 @@ export class DiskUserStorage implements UserStorage {
             },
             referral: {
                 referralLink: userData.referral.referralLink,
-                referrerUserId: userData.referral.referrerUserId
+                referrerUserId: userData.referral.referrerUserId,
+                referralCount: userData.referral.referralCount,
+                referralBonuses: userData.referral.referralBonuses,
+                referralSubscriptions: userData.referral.referralSubscriptions,
             },
         };
 

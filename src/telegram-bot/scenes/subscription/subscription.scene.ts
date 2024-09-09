@@ -1,5 +1,5 @@
 import { Markup, Scenes } from 'telegraf';
-import { User, UserSubscription } from '../../user/user';
+import { User, UserSubscription, UserId } from '../../user/user';
 import { millisecondsToHumanReadable } from '../../utils/time';
 import { getOrCreateUser, saveUser } from '../../user/get-or-create-user';
 import { getSolBalance } from '../../../balances/balancemanager';
@@ -23,7 +23,7 @@ export const subscriptionScene = new Scenes.BaseScene<MyLocalContext>('SUBSCRIPT
 
 function getSubscriptionMessage(userSubscription: UserSubscription) {
     if (!userSubscription.subscriptionEnd) {
-       return "You do not have an active subscription yet\\. 🕒";
+        return "You do not have an active subscription yet\\. 🕒";
     }
     const now = new Date().getTime();
     if (userSubscription.subscriptionEnd < now) {
@@ -31,6 +31,17 @@ function getSubscriptionMessage(userSubscription: UserSubscription) {
     }
     const leftMilliseconds = userSubscription.subscriptionEnd - now;
     return `Your subscription is active\\. Time left: ${millisecondsToHumanReadable(leftMilliseconds)} ⏳`;
+}
+
+async function recordFirstSubscription(userId: UserId, subscriptionType: string) {
+    const userStorage = botPerUserManager.getUserStorage(userId);
+    const user = await userStorage.readUser();
+    if (!user) return;
+
+    if (!user.referral.firstSubscriptionType) {
+        user.referral.firstSubscriptionType = subscriptionType;
+        await saveUser(user);
+    }
 }
 
 subscriptionScene.enter(async (ctx: MyLocalContext) => {
@@ -124,6 +135,7 @@ subscriptionScene.action('subscribe_weekly', async (ctx) => {
     user.subscription.subscriptionEnd = new Date().getTime() + 7 * 24 * 60 * 60 * 1000;
 
     await saveUser(user);
+    await recordFirstSubscription(user.userId, 'Weekly');
     await sendSubscriptionConfirmation(ctx, user, 'Weekly Subscription');
 });
 
@@ -133,6 +145,7 @@ subscriptionScene.action('subscribe_monthly', async (ctx) => {
     user.subscription.subscriptionEnd = new Date().getTime() + 30 * 24 * 60 * 60 * 1000;
 
     await saveUser(user);
+    await recordFirstSubscription(user.userId, 'Monthly');
     await sendSubscriptionConfirmation(ctx, user, 'Monthly Subscription');
 });
 
@@ -142,6 +155,7 @@ subscriptionScene.action('subscribe_lifetime', async (ctx) => {
     user.subscription.subscriptionEnd = new Date('9999-12-31T23:59:59.999Z').getTime();
 
     await saveUser(user);
+    await recordFirstSubscription(user.userId, 'Lifetime');
     await sendSubscriptionConfirmation(ctx, user, 'Lifetime Subscription');
 });
 

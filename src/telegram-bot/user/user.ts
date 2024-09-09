@@ -16,6 +16,10 @@ export interface UserSubscription {
 export interface UserReferral {
     referralLink?: string;
     referrerUserId?: UserId;
+    referralCount?: number;
+    referralBonuses?: number;
+    referralSubscriptions?: { [userId: number]: string };
+    firstSubscriptionType?: string;
 }
 
 export interface User {
@@ -23,4 +27,5 @@ export interface User {
     settings: UserSettings;
     referral: UserReferral;
     subscription: UserSubscription;
+    bonusBalance?: number;
 }

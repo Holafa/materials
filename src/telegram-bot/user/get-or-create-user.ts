@@ -16,7 +16,10 @@ export async function getOrCreateUser(ctx: Context): Promise<User> {
         userId,
         referral: {
             referralLink: undefined,
-            referrerUserId: undefined
+            referrerUserId: undefined,
+            referralCount: 0,
+            referralBonuses: 0,
+            referralSubscriptions: {},
         },
         settings: {
             slippageBps: DEFAULT_SETTINGS.slippageBps,

@@ -7,6 +7,7 @@ import { walletScenes } from './wallet/wallet.scene';
 import { BaseScene } from 'telegraf/scenes';
 import { tokenScenes } from './token/token.scene';
 import { subscriptionScene } from './subscription/subscription.scene';
+import { referralScene } from "./referral.scene";
 
 export const allCommands = [
     {
@@ -43,6 +44,7 @@ const botScenes: ReadonlyArray<BaseScene<MyContext>> = [
     startScene,
     helpScene,
     settingsScene,
+    referralScene,
     subscriptionScene,
     ...tokenScenes,
     ...walletScenes
